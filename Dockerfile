@@ -54,6 +54,7 @@ RUN mkdir -p /var/www/html \
         --with-file-aio \
         --with-http_v2_module \
         --add-module=/tmp/headers-more-nginx-module-$MORE_SET_HEADER_VERSION \
+        --add-module=/tmp/ngx_http_geoip2_module \
         --add-module=/tmp/nginx-dav-ext-module \
     " \
     && addgroup -S nginx \
@@ -65,6 +66,7 @@ RUN mkdir -p /var/www/html \
         openssl-dev \
         pcre-dev \
         zlib-dev \
+        libmaxminddb-dev \
         linux-headers \
         curl \
         gnupg \
@@ -72,10 +74,12 @@ RUN mkdir -p /var/www/html \
         gd-dev \
         geoip-dev \
         git \
+        wget \
     && cd /tmp/ \
     && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$MORE_SET_HEADER_VERSION.tar.gz -o $MORE_SET_HEADER_VERSION.tar.gz \
     && tar xvf $MORE_SET_HEADER_VERSION.tar.gz \
     && git clone https://github.com/arut/nginx-dav-ext-module.git /tmp/nginx-dav-ext-module \
+    && git clone https://github.com/leev/ngx_http_geoip2_module.git /tmp/ngx_http_geoip2_module \
     && curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
     && curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
     && export GNUPGHOME="$(mktemp -d)" \
@@ -152,8 +156,10 @@ RUN mkdir -p /var/www/html \
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 COPY conf/nginx.vh.default.conf /etc/nginx/conf.d/default.conf
+COPY conf/geoip.conf /etc/nginx/geoip.conf
 
+COPY entrypoint.sh /entrypoint.sh
 EXPOSE 80 443
 STOPSIGNAL SIGQUIT
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["sh", "-c", "/entrypoint.sh"]
