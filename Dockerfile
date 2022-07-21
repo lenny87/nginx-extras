@@ -4,7 +4,7 @@ MAINTAINER Joao Gilberto Magalhaes
 
 WORKDIR /var/www/html
 
-ENV NGINX_VERSION 1.20.1
+ENV NGINX_VERSION 1.22.0
 ENV MORE_SET_HEADER_VERSION 0.33
 
 RUN mkdir -p /var/www/html \
@@ -56,6 +56,7 @@ RUN mkdir -p /var/www/html \
         --add-module=/tmp/headers-more-nginx-module-$MORE_SET_HEADER_VERSION \
         --add-module=/tmp/ngx_http_geoip2_module \
         --add-module=/tmp/nginx-dav-ext-module \
+        --add-module=/tmp/ngx_brotli
     " \
     && addgroup -S nginx \
     && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
@@ -80,6 +81,7 @@ RUN mkdir -p /var/www/html \
     && tar xvf $MORE_SET_HEADER_VERSION.tar.gz \
     && git clone https://github.com/arut/nginx-dav-ext-module.git /tmp/nginx-dav-ext-module \
     && git clone https://github.com/leev/ngx_http_geoip2_module.git /tmp/ngx_http_geoip2_module \
+    && git clone https://github.com/google/ngx_brotli.git /tmp/ngx_brotli \
     && curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
     && curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
     && export GNUPGHOME="$(mktemp -d)" \
