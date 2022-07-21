@@ -56,7 +56,7 @@ RUN mkdir -p /var/www/html \
         --add-module=/tmp/headers-more-nginx-module-$MORE_SET_HEADER_VERSION \
         --add-module=/tmp/ngx_http_geoip2_module \
         --add-module=/tmp/nginx-dav-ext-module \
-        --add-module=/tmp/ngx_brotli
+        --add-module=/tmp/ngx_brotli \
     " \
     && addgroup -S nginx \
     && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
